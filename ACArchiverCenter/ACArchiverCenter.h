@@ -1,9 +1,9 @@
 //
 //  ACArchiverCenter.h
-//  xulinfeng
+//  Modool
 //
 //  Created by xulinfeng on 2016/12/22.
-//  Copyright © 2016年 xulinfeng. All rights reserved.
+//  Copyright © 2016年 Modool. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -12,16 +12,20 @@
 
 @property (nonatomic, copy, readonly) NSString *name;
 @property (nonatomic, copy, readonly) NSString *filePath;
+
 @property (nonatomic, copy, readonly) NSArray<NSString *> *allKeys;
-@property (nonatomic, copy, readonly) NSArray<id> *allValues;
+@property (nonatomic, copy, readonly) NSArray *allValues;
+
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, id<NSObject, NSCopying, NSCoding>> *dictionary;
+
 @property (nonatomic, assign, readonly) NSUInteger count;
 
-- (NSArray<NSString *> *)allKeysForObject:(id)anObject;
-- (NSArray<NSObject, NSCopying, NSCoding> *)objectsForKeys:(NSArray<NSString *> *)keys notFoundMarker:(id)marker;
+- (NSArray<NSString *> *)allKeysForObject:(id<NSObject, NSCopying, NSCoding>)anObject;
+- (NSArray<NSObject, NSCopying, NSCoding> *)objectsForKeys:(NSArray<NSString *> *)keys notFoundMarker:(id<NSObject, NSCopying, NSCoding>)marker;
 
-- (id<NSCopying, NSCoding>)objectForKey:(NSString *)aKey;
+- (id<NSObject, NSCopying, NSCoding>)objectForKey:(NSString *)aKey;
 
-- (id)objectForKeyedSubscript:(NSString *)key;
+- (id<NSObject, NSCopying, NSCoding>)objectForKeyedSubscript:(NSString *)key;
 - (void)setObject:(id<NSObject, NSCopying, NSCoding>)anObject forKeyedSubscript:(NSString *)aKey;
 
 - (void)setObject:(id<NSObject, NSCopying, NSCoding>)anObject forKey:(NSString *)aKey;
@@ -40,6 +44,13 @@
  @return state of saving
  */
 - (BOOL)save;
+
+/**
+ Save synchronizely into file.
+
+ @return state of saving
+ */
+- (BOOL)synchronize;
 
 @optional
 
@@ -100,17 +111,20 @@
 @end
 
 @interface ACArchiveStorage : NSObject <ACArchiveStorage>
+
 @end
 
 @interface ACArchiverCenter : NSObject
 
-@property (nonatomic, strong, readonly) NSMutableArray<NSString *> *archiveStorageNames;
+@property (nonatomic, copy, readonly) NSArray<NSString *> *storageNames;
 
 @property (nonatomic, copy, readonly) NSString *directory;
 
 @property (nonatomic, copy, readonly) NSString *uniqueIdentifier;
 
-- (instancetype)initWithUniqueIdentifier:(NSString *)uniqueIdentifier directory:(NSString *)directory;
+- (instancetype)initWithUniqueIdentifier:(NSString *)uniqueIdentifier directory:(NSString *)directory NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
 /**
  The default center.
@@ -121,7 +135,7 @@
 
 /**
  The default storage for default center.
- 
+
  @return default instance of storage.
  */
 + (id<ACArchiveStorage>)defaultStorage;
@@ -135,7 +149,7 @@
 
 /**
  Require an storage, it will alloc an new storage if the storage didn't exist,
- 
+
  @param name storage name
  @return an storage
  */
@@ -152,3 +166,5 @@
 - (void)saveAll;
 
 @end
+
+extern id ACArchiverCenterBoxValue(const char *type, ...);
